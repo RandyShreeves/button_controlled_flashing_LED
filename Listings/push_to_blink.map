@@ -4,6 +4,9 @@ Component: Arm Compiler for Embedded 6.19 Tool: armlink [5e73cb00]
 
 Section Cross References
 
+    push_to_blink.o(.ARM.exidx.text.main) refers to push_to_blink.o(.text.main) for [Anonymous Symbol]
+    push_to_blink.o(.ARM.exidx.text.portE_initialization) refers to push_to_blink.o(.text.portE_initialization) for [Anonymous Symbol]
+    push_to_blink.o(.ARM.exidx.text.delay_1ms) refers to push_to_blink.o(.text.delay_1ms) for [Anonymous Symbol]
     startup.o(STACK) refers (Special) to heapauxi.o(.text) for __use_two_region_memory
     startup.o(HEAP) refers (Special) to heapauxi.o(.text) for __use_two_region_memory
     startup.o(RESET) refers (Special) to heapauxi.o(.text) for __use_two_region_memory
@@ -12,9 +15,6 @@ Section Cross References
     startup.o(.text) refers (Special) to heapauxi.o(.text) for __use_two_region_memory
     startup.o(.text) refers to startup.o(HEAP) for HeapMem
     startup.o(.text) refers to startup.o(STACK) for StackMem
-    push_to_blink.o(.ARM.exidx.text.main) refers to push_to_blink.o(.text.main) for [Anonymous Symbol]
-    push_to_blink.o(.ARM.exidx.text.portE_initialization) refers to push_to_blink.o(.text.portE_initialization) for [Anonymous Symbol]
-    push_to_blink.o(.ARM.exidx.text.delay_1ms) refers to push_to_blink.o(.text.delay_1ms) for [Anonymous Symbol]
     __main.o(!!!main) refers to __rtentry.o(.ARM.Collect$$rtentry$$00000000) for __rt_entry
     __rtentry.o(.ARM.Collect$$rtentry$$00000000) refers (Special) to __rtentry2.o(.ARM.Collect$$rtentry$$0000000A) for __rt_entry_li
     __rtentry.o(.ARM.Collect$$rtentry$$00000000) refers (Special) to __rtentry2.o(.ARM.Collect$$rtentry$$0000000D) for __rt_entry_main
@@ -195,9 +195,9 @@ Image Symbol Table
     ../clib/stdlib.c                         0x00000000   Number         0  exit.o ABSOLUTE
     ../fplib/fpinit.s                        0x00000000   Number         0  fpinit.o ABSOLUTE
     ../fplib/fpinit_empty.s                  0x00000000   Number         0  fpinit_empty.o ABSOLUTE
+    Startup.s                                0x00000000   Number         0  startup.o ABSOLUTE
     dc.s                                     0x00000000   Number         0  dc.o ABSOLUTE
     push_to_blink.c                          0x00000000   Number         0  push_to_blink.o ABSOLUTE
-    startup.s                                0x00000000   Number         0  startup.o ABSOLUTE
     RESET                                    0x00000000   Section      644  startup.o(RESET)
     !!!main                                  0x00000284   Section        8  __main.o(!!!main)
     !!!scatter                               0x0000028c   Section       52  __scatter.o(!!!scatter)
@@ -505,7 +505,7 @@ Memory Map of the image
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x00000000   0x00000000   0x00000284   Code   RO            3  * RESET               startup.o
+    0x00000000   0x00000000   0x00000284   Code   RO           18  * RESET               startup.o
     0x00000284   0x00000284   0x00000008   Code   RO           31  * !!!main             c_w.l(__main.o)
     0x0000028c   0x0000028c   0x00000034   Code   RO          196    !!!scatter          c_w.l(__scatter.o)
     0x000002c0   0x000002c0   0x0000001c   Code   RO          198    !!handler_zi        c_w.l(__scatter_zi.o)
@@ -552,7 +552,7 @@ Memory Map of the image
     0x000002f8   0x000002f8   0x00000004   Code   RO          113    .ARM.Collect$$rtexit$$00000003  c_w.l(rtexit2.o)
     0x000002fc   0x000002fc   0x00000006   Code   RO          114    .ARM.Collect$$rtexit$$00000004  c_w.l(rtexit2.o)
     0x00000302   0x00000302   0x00000002   PAD
-    0x00000304   0x00000304   0x00000030   Code   RO            4    .text               startup.o
+    0x00000304   0x00000304   0x00000030   Code   RO           19    .text               startup.o
     0x00000334   0x00000334   0x00000006   Code   RO           29    .text               c_w.l(heapauxi.o)
     0x0000033a   0x0000033a   0x0000004a   Code   RO           49    .text               c_w.l(sys_stackheap_outer.o)
     0x00000384   0x00000384   0x00000012   Code   RO           51    .text               c_w.l(exit.o)
@@ -562,7 +562,7 @@ Memory Map of the image
     0x000003ac   0x000003ac   0x00000002   Code   RO          137    .text               c_w.l(use_no_semi.o)
     0x000003ae   0x000003ae   0x00000000   Code   RO          139    .text               c_w.l(indicate_semi.o)
     0x000003ae   0x000003ae   0x00000002   PAD
-    0x000003b0   0x000003b0   0x00000086   Code   RO           13    .text.main          push_to_blink.o
+    0x000003b0   0x000003b0   0x00000086   Code   RO            2    .text.main          push_to_blink.o
     0x00000436   0x00000436   0x00000002   PAD
     0x00000438   0x00000438   0x00000010   Data   RO          195    Region$$Table       anon$$obj.o
 
@@ -577,8 +577,8 @@ Memory Map of the image
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
     0x20000000        -       0x00000060   Zero   RW           60    .bss                c_w.l(libspace.o)
-    0x20000060        -       0x00000000   Zero   RW            2    HEAP                startup.o
-    0x20000060        -       0x00000400   Zero   RW            1    STACK               startup.o
+    0x20000060        -       0x00000000   Zero   RW           17    HEAP                startup.o
+    0x20000060        -       0x00000400   Zero   RW           16    STACK               startup.o
 
 
 ==============================================================================
@@ -589,10 +589,10 @@ Image component sizes
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
        134          0          0          0          0       1225   push_to_blink.o
-       692        632          0          0       1024        956   startup.o
+       692        632          0          0       1024        940   startup.o
 
     ----------------------------------------------------------------------
-       828        632         16          0       1024       2181   Object Totals
+       828        632         16          0       1024       2165   Object Totals
          0          0         16          0          0          0   (incl. Generated)
          2          0          0          0          0          0   (incl. Padding)
 
@@ -640,8 +640,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      1080        648         16          0       1120       2589   Grand Totals
-      1080        648         16          0       1120       2589   ELF Image Totals
+      1080        648         16          0       1120       2573   Grand Totals
+      1080        648         16          0       1120       2573   ELF Image Totals
       1080        648         16          0          0          0   ROM Totals
 
 ==============================================================================
