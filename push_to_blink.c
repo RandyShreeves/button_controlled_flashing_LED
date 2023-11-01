@@ -20,19 +20,18 @@
 // 2. Global Declarations Section
 void port_e_initialization(void);
 void sys_tick_initialization(void);
-void delay_100ms(void);
+void delay_1ms(unsigned long msec);
 
 // 3. Subroutines Section
 int main(void){ 
 	// Setup
 	unsigned long input_switch;
 	port_e_initialization();
-	sys_tick_initialization();
 	GPIO_PORTE_DATA_R |= 0x02; // LED starts in the on state
 	// Loop
   while(1){
 		input_switch = GPIO_PORTE_DATA_R&0x01;
-		delay_100ms();
+		delay_1ms(100);
 		if (input_switch == 0x01){		// if switch is pressed
 			GPIO_PORTE_DATA_R ^= 0x02;	// toggle LED
 		}
@@ -56,13 +55,19 @@ void port_e_initialization(void){
 
 void sys_tick_initialization(void){
 	NVIC_ST_CTRL_R = 0;
-	NVIC_ST_RELOAD_R = 1599999;
+	NVIC_ST_RELOAD_R = 15999;
 	NVIC_ST_CURRENT_R = 0;
 	NVIC_ST_CTRL_R = 0x00000005;
 }//end SysTick_initialization
 
-void delay_100ms(void){
-	while((NVIC_ST_CTRL_R&0x00010000) == 0) {
-		// wait for count flag to be set
-  }
+void delay_1ms(unsigned long msec){
+	unsigned long n = msec;
+	while (n > 0){
+		sys_tick_initialization();
+		while((NVIC_ST_CTRL_R&0x00010000) == 0) {
+			// wait for count flag to be set
+		}// end inner while loop
+		NVIC_ST_CTRL_R = 0;
+		n--;
+	}// end outer while loop
 }// end delay_1ms()
